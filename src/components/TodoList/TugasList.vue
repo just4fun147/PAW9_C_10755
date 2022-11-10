@@ -18,19 +18,40 @@
                     details
                     style="margin-top: 30px"></v-text-field>
                     <v-spacer></v-spacer>
+                    <v-spacer></v-spacer>
+                    <v-spacer></v-spacer>
+                    <v-spacer></v-spacer>
+                    <v-spacer></v-spacer>
+                    <v-spacer></v-spacer>
+                    <v-combobox
+                        v-model="select"
+                        :items="combo"
+                        label="Search"
+                        single
+                        outlined
+                        dense
+                    ></v-combobox>
+                    <v-spacer></v-spacer>
+                    <v-spacer></v-spacer>
                     <v-btn color="success" dark @click="dialog =true"> Tambah </v-btn>
+
+                    
             </v-card-title>
         </v-card>
         <v-card>
-            <v-data-table :headers="headers"
-                      :items="todos"
+          
+            <v-data-table 
                       v-model="selected"
+                      :headers="headers"
+                      :items="todos"
+                      :search="filter"
                       item-key="task"
                       :single-expand="singleExpand"
+                      :single-select="singleSelect"
                       :expanded.sync="expanded"
                       show-expand
+                      show-select
                       class="elevation-1">
-                      
                 <template v-slot:[`item.actions`]="{ item }">
                     <v-btn small class="mx-2"
                         fab
@@ -48,7 +69,7 @@
                     <span v-else-if="item.priority=='Biasa'">
                         <v-icon color="green">mdi-alert-octagon</v-icon>
                     </span>
-                    <span v-else-if="item.priority=='Tidak Penting'">
+                    <span v-else-if="item.priority=='Tidak'">
                         <v-icon color="blue">mdi-alert-octagon</v-icon>
                     </span>
                 </template>
@@ -78,11 +99,11 @@
                             </template>
                         </v-simple-table>
                         </span>
-                        <span v-if="item.priority=='Tidak Penting'">
+                        <span v-if="item.priority=='Tidak'">
                             <v-simple-table style="background-color:blue">
                              <template v-slot:default>
                                 <tr ><v-btn  color="blue" dark disable style="border-radius: 25px; margin: 10px;">
-                                    <v-icon dark right class="ma-2" >mdi-fire</v-icon> {{ item.priority }}</v-btn>
+                                    <v-icon dark right class="ma-2" >mdi-fire</v-icon> TIDAK PENTING</v-btn>
                                 </tr>
                                 <tr ><v-btn  color="yellow" dark disable style="border-radius: 25px; margin: 10px;">
                                     <v-icon dark right class="ma-2" >mdi-calendar</v-icon> {{ item.note }}</v-btn>
@@ -94,9 +115,28 @@
                     </td>
                 </template>
 
-                      
             </v-data-table>
+            
         </v-card>
+        <v-card>
+            <span v-if="selected.length">
+                <v-header>
+                    <h2 style="margin-left:10px">Delete Multiple</h2>
+                </v-header>
+                <span v-for="(list,index) in selected" :key="index">        
+                    <ul>
+                        <li style="margin-left:10px"><p>{{ list.task }}</p></li>
+                    </ul>
+                </span>
+                
+                <v-footer>
+                        <v-btn color="red" @click="deleteAllItem()">HAPUS SEMUA</v-btn>
+                        
+                </v-footer>
+            </span>
+                
+               
+            </v-card>
         <!-- TGS -->
         <v-card>
             
@@ -195,6 +235,10 @@ export default{
             dialogs: false,
             notes:false,
             conf:false,
+            select:'',
+            combo:[
+                "All","Penting","Tidak Penting"
+            ],
             headers: [
                 {
                     text: "Task",
@@ -221,7 +265,7 @@ export default{
                 },
                 {
                     task: "Gaming",
-                    priority: "Tidak Penting",
+                    priority: "Tidak",
                     note: "Wasting time",
                     status: "Belum Selesai",
                 },
@@ -232,10 +276,30 @@ export default{
                 note: null,
                 status: null,
             },
+            selected:[
+            ],
         };
+    },
+    computed:{
+        filter(){
+            if(this.select=="Penting"){
+                return "Penting"
+            }
+            if(this.select=="All"){
+                return ""
+            }
+            if(this.select=="Tidak Penting"){
+                return "Tidak"
+            }
+            return "";
+        }
     },
     methods: {
         save(){
+            this.temp1=this.todos.task;
+            if(this.formTodo.priority=="Tidak Penting"){
+                this.formTodo.priority="Tidak";
+            }
             this.todos.push(this.formTodo);
             this.resetForm();
             this.dialog = false;
@@ -265,6 +329,30 @@ export default{
                 this.todos.splice(this.todos.indexOf(event),1); 
                 this.conf = false;  
         },
+        deleteAllItem(){
+            this.temp = this.selected.length;
+            this.temp2 = this.selected.length;
+            if(this.todos.length==this.selected.length){
+                
+                this.todos=[];
+                
+                
+            }else{
+                while(this.temp!=0){    
+                    for(var j =0;j<this.temp2;j++){
+                        for(var i = 0; i<=this.todos.length;i++){
+                            if(this.selected[j]==this.todos[i]){
+                                this.todos.splice(i,1);
+                                this.temp--;
+                            }
+                        }
+                        }
+                    }
+
+            }
+            this.selected=[];
+            
+        },
         resetForm(){
             this.formTodo = {
                 task: null,
@@ -273,6 +361,9 @@ export default{
                 status: null,
             };
         },
+        inputSelect:function(event){
+            this.listSelected.task(event.task)
+        }
     },
 };
 </script>
