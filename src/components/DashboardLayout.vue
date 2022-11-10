@@ -27,7 +27,8 @@
         </v-navigation-drawer>
         <v-app-bar color="red lighten-3" dark>
             <v-app-bar-nav-icon
-            @click="drawer = true" color="white"></v-app-bar-nav-icon>
+            @click="drawer = true" 
+            color="white"></v-app-bar-nav-icon>
             <v-Spacer></v-Spacer>
         </v-app-bar>
         <div class=" fullheight pa-5">
@@ -46,6 +47,8 @@
                 items: [
                     {title: "Dashboard", to:"/"},
                     {title: "Guided", to:"/gd"},
+                    {title: "Activity Unguided", to:"/ugd"},
+                    {title: "Tugas", to:"/tgs"},
                 ],
             };
         },

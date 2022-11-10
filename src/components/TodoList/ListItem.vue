@@ -49,6 +49,11 @@
                             v-model="formTodo.note"
                             label="Note"
                             required></v-textarea>
+                        <v-select
+                            v-model="formTodo.status"
+                            :items="[`Selesai`, `Belum Selesai`]"
+                            label="Status"
+                            required></v-select>
                     </v-container>
                 </v-card-text>
                 <v-card-actions>
